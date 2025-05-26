@@ -49,7 +49,6 @@ jobs:
             git push
           fi
       - name: Run news fetcher script and generate report
-        run: python news_fetcher.py > report.md
         # This is a placeholder. You'll need to configure this step for actual email sending.
         # 1. Create a GitHub secret named USER_EMAIL in your repository settings 
         #    (Settings > Secrets and variables > Actions > New repository secret) 
