@@ -1,3 +1,4 @@
+import argparse
 import feedparser
 import requests
 from bs4 import BeautifulSoup
@@ -134,5 +135,25 @@ def fetch_news():
     return "".join(report)
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Fetches AI news from various sources and compiles a Markdown report.")
+    parser.add_argument(
+        "-o", "--output",
+        help="Path to save the news report (e.g., report.md). Prints to stdout if not provided.",
+        default=None,
+        metavar="FILEPATH" 
+    )
+    args = parser.parse_args()
+
     news_report = fetch_news()
-    print(news_report)
+
+    if args.output:
+        try:
+            with open(args.output, 'w', encoding='utf-8') as f:
+                f.write(news_report)
+            print(f"Report saved to {args.output}")
+        except IOError as e:
+            print(f"Error writing report to file {args.output}: {e}")
+            print("\nReport content:\n")
+            print(news_report) # Print to stdout if file writing fails
+    else:
+        print(news_report)
