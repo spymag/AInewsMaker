@@ -2,7 +2,7 @@ name: Daily AI News Report
 
 on:
   schedule:
-    - cron: '0 8 * * *' # Runs daily at 08:00 UTC
+    - cron: '0 6 * * *' # Runs daily at 06:00 UTC
   workflow_dispatch: # Allows manual triggering
 
 jobs:
@@ -48,8 +48,8 @@ jobs:
             git commit -m "Add daily AI news report for $(date +%Y-%m-%d)"
             git push
           fi
-      
-      - name: Send email notification (placeholder)
+      - name: Run news fetcher script and generate report
+        run: python news_fetcher.py > report.md
         # This is a placeholder. You'll need to configure this step for actual email sending.
         # 1. Create a GitHub secret named USER_EMAIL in your repository settings 
         #    (Settings > Secrets and variables > Actions > New repository secret) 
