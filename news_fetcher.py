@@ -151,7 +151,13 @@ def generate_ai_report(articles_data):
         prompt_parts.append(f"Summary: {article['summary']}\n")
 
     prompt_parts.append("Please generate a concise news report (max 1 page, ~500 words) summarizing these articles.")
-    prompt_parts.append("For each piece of information, cite the source name and link, e.g., [Source: <Source Name>, Link: <URL>].")
+    prompt_parts.append(
+        "When you cite information from an article in your summary, you **must** make the source name a clickable Markdown link pointing directly to the article's URL. "
+        "The format **must** be `[Source Name](actual_article_URL)`. "
+        "For example, if a point comes from an article from 'Tech Chronicles' with the URL 'https://example.com/news/latest-ai', "
+        "the citation in your report should look exactly like this: `[Tech Chronicles](https://example.com/news/latest-ai)`. "
+        "Do not write '[Source: ..., Link: ...]' or just the URL text. Use the precise `[DisplayName](URL)` Markdown hyperlink format."
+    )
     prompt_parts.append("The output should be in well-formatted, readable Markdown.")
     prompt_string = "\n".join(prompt_parts)
 
