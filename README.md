@@ -1,12 +1,12 @@
 # AInewsMaker
 
-Fetches AI news from reputable websites and generates a summary report. This script can now leverage OpenAI's GPT model (gpt-4.1-nano) to create a condensed and analyzed version of the collected news.
+Fetches AI news from reputable websites and generates a summary report. This script can now leverage OpenAI's GPT model (gpt-5-nano) to create a condensed and analyzed version of the collected news.
 
 ## Features
 
 *   **Multi-Source Aggregation**: Gathers news from various configured RSS feeds and websites.
 *   **HTML Scraping Fallback**: If RSS feeds are unavailable or incomplete, the script attempts to scrape news directly from website HTML.
-*   **AI-Powered Summarization**: Utilizes OpenAI's `gpt-4.1-nano` model to generate a concise and coherent news report from the fetched articles. This provides a high-level overview and analysis of the latest AI developments.
+*   **AI-Powered Summarization**: Utilizes OpenAI's `gpt-5-nano` model to generate a concise and coherent news report from the fetched articles. This provides a high-level overview and analysis of the latest AI developments.
 *   **Markdown Reports**: Outputs reports in Markdown format, suitable for easy reading and sharing.
 *   **Automated Daily Reports**: Includes a GitHub Actions workflow to generate and commit a new report daily.
 
