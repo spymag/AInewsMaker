@@ -2,6 +2,12 @@
 
 Fetches AI news from reputable websites and generates a summary report. This script can now leverage OpenAI's GPT model (gpt-5-nano) to create a condensed and analyzed version of the collected news.
 
+## Live Report
+
+You can view the latest AI news report on our modern, web-based viewer:
+
+**[View the Latest AI News Report](index.html)**
+
 ## Features
 
 *   **Multi-Source Aggregation**: Gathers news from various configured RSS feeds and websites.
