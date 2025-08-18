@@ -163,7 +163,7 @@ def generate_ai_report(articles_data):
 
     try:
         response = client.chat.completions.create(
-            model="gpt-4.1-nano", # Using the specified model
+            model="gpt-5.1-nano", # Using the specified model
             messages=[
                 {"role": "system", "content": "You are a news analyst compiling a report."},
                 {"role": "user", "content": prompt_string}
