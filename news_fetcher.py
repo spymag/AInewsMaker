@@ -1,4 +1,6 @@
 import argparse
+import argparse
+import datetime
 import feedparser
 import requests
 from bs4 import BeautifulSoup
@@ -141,8 +143,16 @@ def fetch_news():
 
 def generate_ai_report(articles_data):
     client = openai.OpenAI() # API key picked from OPENAI_API_KEY env var
+    current_date = datetime.datetime.now().strftime("%Y-%m-%d")
 
-    prompt_parts = ["Here is a list of news articles:\n"]
+    prompt_parts = [
+        "Please generate a concise news report (max 1 page, ~500 words) summarizing the following articles.",
+        f"The report MUST have a main title formatted as an H1 markdown header, like this: '# AI News Report for {current_date}'.",
+        "All subsequent sections must use H2 headers, like this: '## Section Title'.",
+        "When you cite information from an article, you **must** make the source name a clickable Markdown link pointing to the article's URL. The format is `[Source Name](URL)`. For example, a citation for an article from 'Tech Chronicles' should be `[Tech Chronicles](https://example.com/news/latest-ai)`.",
+        "The output must be well-formatted, readable Markdown.",
+        "\nHere is the list of news articles:\n"
+    ]
     for i, article in enumerate(articles_data):
         prompt_parts.append(f"Article {i+1}:")
         prompt_parts.append(f"Source: {article['source_name']}")
@@ -150,15 +160,6 @@ def generate_ai_report(articles_data):
         prompt_parts.append(f"Link: {article['link']}")
         prompt_parts.append(f"Summary: {article['summary']}\n")
 
-    prompt_parts.append("Please generate a concise news report (max 1 page, ~500 words) summarizing these articles.")
-    prompt_parts.append(
-        "When you cite information from an article in your summary, you **must** make the source name a clickable Markdown link pointing directly to the article's URL. "
-        "The format **must** be `[Source Name](actual_article_URL)`. "
-        "For example, if a point comes from an article from 'Tech Chronicles' with the URL 'https://example.com/news/latest-ai', "
-        "the citation in your report should look exactly like this: `[Tech Chronicles](https://example.com/news/latest-ai)`. "
-        "Do not write '[Source: ..., Link: ...]' or just the URL text. Use the precise `[DisplayName](URL)` Markdown hyperlink format."
-    )
-    prompt_parts.append("The output should be in well-formatted, readable Markdown.")
     prompt_string = "\n".join(prompt_parts)
 
     try:
