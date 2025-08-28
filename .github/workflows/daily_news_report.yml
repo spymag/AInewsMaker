@@ -35,6 +35,15 @@ jobs:
           echo "report_path=$FILENAME" >> $GITHUB_OUTPUT # Set output for other steps
           echo "Report saved to $FILENAME"
 
+      - name: Create latest.md and clean up old reports
+        run: |
+          LATEST_REPORT_PATH="reports/latest.md"
+          cp "${{ steps.news_script.outputs.report_path }}" "$LATEST_REPORT_PATH"
+          echo "Created latest.md"
+          # Optional: To keep the repository clean, you might want to remove reports older than 30 days
+          find reports -type f -name "ai_news_report_*.md" -mtime +30 -exec rm {} \;
+          echo "Cleaned up reports older than 30 days."
+
       - name: Configure Git
         run: |
           git config --global user.name "GitHub Action Bot"
@@ -42,8 +51,8 @@ jobs:
 
       - name: Commit and Push Report
         run: |
-          git add ${{ steps.news_script.outputs.report_path }}
-          # Check if there are changes to commit to avoid error if the file is unchanged (though unlikely for new reports)
+          git add reports/latest.md ${{ steps.news_script.outputs.report_path }}
+          # Check if there are changes to commit to avoid error if the file is unchanged
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else

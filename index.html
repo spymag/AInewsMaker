@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI News Report</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AI News Report</h1>
+            <p>The latest news and developments in the world of Artificial Intelligence.</p>
+        </header>
+        <main id="report-content">
+            <!-- The report will be loaded here -->
+        </main>
+        <footer>
+            <p>Powered by AInewsMaker</p>
+        </footer>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            fetch("reports/latest.md")
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok " + response.statusText);
+                    }
+                    return response.text();
+                })
+                .then(markdown => {
+                    document.getElementById("report-content").innerHTML = marked.parse(markdown);
+                })
+                .catch(error => {
+                    console.error("Error fetching or parsing report:", error);
+                    document.getElementById("report-content").innerHTML = "<p>Could not load the latest report. Please try again later.</p>";
+                });
+        });
+    </script>
+</body>
+</html>
