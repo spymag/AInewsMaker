@@ -1,4 +1,9 @@
-import argparse
+#!/usr/bin/env python3
+import sys
+if sys.version_info < (3, 8):
+    sys.stderr.write("This script requires Python 3.8+ (f-strings and annotations).\n")
+    sys.exit(1)
+
 import argparse
 import datetime
 import feedparser
@@ -7,38 +12,50 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import openai
 import os
+import json
+import random
 
-NEWS_SOURCES = [
-    {
-        "name": "MIT Technology Review",
-        "url": "https://www.technologyreview.com/feed/",
-        "html_url": "https://www.technologyreview.com"
-    },
-    {
-        "name": "VentureBeat AI",
-        "url": "https://venturebeat.com/category/ai/feed/",
-        "html_url": "https://venturebeat.com/category/ai/"
-    },
-    {
-        "name": "The Verge AI",
-        "url": "https://www.theverge.com/rss/artificial-intelligence/index.xml",
-        "html_url": "https://www.theverge.com/ai" # Last attempt for The Verge URL
-    },
-    {
-        "name": "Ars Technica AI",
-        "url": "https://arstechnica.com/information-technology/artificial-intelligence/feed/",
-        "html_url": "https://arstechnica.com/information-technology/artificial-intelligence/"
-    },
-    {
-        "name": "Stanford HAI News",
-        "url": "https://hai.stanford.edu/news/feed",
-        "html_url": "https://hai.stanford.edu/news"
-    }
-]
 
-def fetch_news():
+def load_all_sources():
+    """Load all sources from environment variable AI_SOURCES_JSON or local sources.json.
+
+    Environment variable takes precedence. Local file is ignored if env var present.
+    Returns list of dicts (may be empty if not found/parse error)."""
+    env_json = os.getenv("AI_SOURCES_JSON")
+    if env_json:
+        try:
+            data = json.loads(env_json)
+            if isinstance(data, list):
+                return data[:50]
+        except Exception:
+            pass
+    # Fallback: local file
+    local_path = os.path.join(os.path.dirname(__file__), 'sources.json')
+    if os.path.isfile(local_path):
+        try:
+            with open(local_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                if isinstance(data, list):
+                    return data[:50]
+        except Exception:
+            return []
+    return []
+
+def select_daily_sources(max_sources: int = 5):
+    """Select up to max_sources from the pool in a deterministic, date-seeded way.
+    Ensures reproducibility for the day and variation across days."""
+    all_sources = load_all_sources()
+    today_seed = datetime.datetime.utcnow().strftime('%Y-%m-%d')
+    rnd = random.Random(today_seed)
+    if max_sources >= len(all_sources):
+        return all_sources
+    return rnd.sample(all_sources, k=max_sources)
+
+
+def fetch_news(max_daily_sources: int = 5):
     articles_data = []
-    for source in NEWS_SOURCES:
+    selected_sources = select_daily_sources(max_daily_sources)
+    for source in selected_sources:
         processed_successfully = False
         try:
             # Attempt RSS feed parsing
@@ -184,6 +201,12 @@ if __name__ == "__main__":
         default=None,
         metavar="FILEPATH"
     )
+    parser.add_argument(
+        "-s", "--sources",
+        type=int,
+        default=5,
+        help="Maximum number of random sources to use today (default 5, <=50)."
+    )
     args = parser.parse_args()
 
     # Check for API key (OpenAI library does this, but good for early user feedback if missing)
@@ -192,7 +215,7 @@ if __name__ == "__main__":
         print("Please set it before running the script.")
         exit(1) # Exit if key is not found
 
-    articles = fetch_news()
+    articles = fetch_news(max_daily_sources=args.sources)
     
     if not articles:
         print("No articles fetched. Exiting.")

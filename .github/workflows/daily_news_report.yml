@@ -29,6 +29,7 @@ jobs:
         id: news_script # Add an id to this step
         env: # Add this env block
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          AI_SOURCES_JSON: ${{ secrets.AI_SOURCES_JSON }}
         run: |
           FILENAME="reports/ai_news_report_$(date +%Y-%m-%d_%H-%M-%S).md"
           python news_fetcher.py --output $FILENAME
